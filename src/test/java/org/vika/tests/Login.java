@@ -13,8 +13,11 @@ public class Login {
 
     public static WebDriver driver;
     public static LoginPage loginPage;
-
+    // private static String URL = " bla bla bla";
     @BeforeClass
+    // треба додати файл драйвера до проекту і вписати нижче шлях до нього, бо щоб комусь заранити це йому потрібно
+    // скачати драйвер з нету і прописати шлях
+    // просто створи drivers папку в проекті кинь шлях до нього замість цього - src/test/java/drivers/chromedriver.exe
     public static void beforeClass() {
         System.setProperty("webdriver.chrome.driver", "C:\\Users\\Victory\\Downloads\\chromedriver_win32\\chromedriver.exe");
         driver = new ChromeDriver();
@@ -23,11 +26,19 @@ public class Login {
 
     @Before
     public void beforeEachTest() {
+        // краще винисти урлу в окремий інстанс і передавти його в сигнатуру
+        // driver.get(URL);
         driver.get("https://www.facebook.com");
     }
 
     @Test
     public void testFacebookLogin_validData() {
+        /*
+        1. Кожен тест має закінчуватись асертом
+        2. набагато краще було б створити метод в loginPage класі який виконує повністю процес заповнення і т.д
+        а сюди передавати лиши його виклик, тобто замість всіх цих викликів в тебе буде один - fillRegistrationFields();
+        і можеш передавати в сигнатуру виклику параметрри які хочеш вписати в поля
+         */
         loginPage.fillFirstname("Vika");
         loginPage.fillLastname("Horditsa");
         loginPage.fillEmailfield("witysya@i.ua");
@@ -54,9 +65,11 @@ public class Login {
         loginPage.submit();
         //driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 
+        // це теж краще описати на loginPage і в окремий метод
         WebElement lastNameValidationAlert = driver.findElement(By.cssSelector("._5633._5634._53ij"));
         String expectedAlert = lastNameValidationAlert.getText();
 
+        // всі меседжі краще теж помістити наверх і передавати їх як стрінгу
         Assert.assertEquals("What’s your name?", expectedAlert);
     }
 
@@ -143,6 +156,8 @@ public class Login {
     }
 
     @Test
+    // не впевнений що це коректно спрацює, окільки ти обираєш селектои елемент за видимістю тексту, то на функції
+    // selectByVisibleText() воно кине ексепсин
     public void testFacebookLogin_invalidDayInBirthday() {
         loginPage.fillFirstname("Vika");
         loginPage.fillLastname("Horditsa");

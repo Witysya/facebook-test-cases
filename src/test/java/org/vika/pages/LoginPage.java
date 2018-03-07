@@ -6,13 +6,31 @@ import org.openqa.selenium.support.ui.Select;
 
 public class LoginPage {
 
+    /*
+    я б перемістив виклик PageFactory.initElements(driver, ClassName); в момент коли ця пейджа відкривається
+    Наприклад - тобі потрібно з логін пейджі перейти на наступну, ти створюєш метод типу -
+    public HomePage submitingLogin (){
+
+    // тут описуєш дії які призводять до переходу на хом пейдж
+    fillAllFieldsAndSubmit();
+
+    // і повертаєш обєкт класу пейджі яка відкриється - тобто PageFactory.initElements(driver, ClassName) повертає по суті обєкт класу ClassName
+    return PageFactory.initElements(driver, Homepage);
+    }
+        Також варто створити абстрактний клас який буде наслыдуватись усымома пейджами для того щоб там описати
+        загальні методи які подібні для всіх, можеш там також переписати методи типу клік і т.д
+     */
     public LoginPage(WebDriver driver) {
         PageFactory.initElements(driver, this);
         this.driver = driver;
     }
 
+    // тут ти створюєш інстанс веб-драйверу а на вході в конструкторі створюєш інший.
+    // суть в тому, що він має бути створений лише раз - в початковій точці - в тебе це login клас.
+    // а далі просто передаєш його через конструктор між різними пейджами
     public WebDriver driver;
 
+    // використовуй пошук за xpath чи сss це більш стабільно
     @FindBy(name = "firstname")
     private WebElement firstName;
 
@@ -42,8 +60,9 @@ public class LoginPage {
 
     //inputtext _55r1
     //Methods
-
+    // рекомендую називати метод відповыдно до того що він виконує - selectBirthDay чи якось так, але це вже як кому привичніше
     public void birthDay(String day) {
+        // буде быльш читабельно якщо пошук 'birthday_day' винести до решти анотацій і передати сюди лише елемент
         Select stat = new Select(driver.findElement(By.name("birthday_day")));
         stat.selectByVisibleText(day);
     }
@@ -79,6 +98,8 @@ public class LoginPage {
     }
 
     public void selectSexRadioButton() {
+        // на скыльки я зрозумыв ексепшин може впасти через те що виконання тесту проходить до того як елемент появиться на сторынці
+        // тобто в catch можна пробувати ще раз викликати sex.click() і додати якийсь wait
         try {
             sex.click();
         } catch (ElementNotVisibleException e) {
